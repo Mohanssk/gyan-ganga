@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 
 dotenv.config(); 
 
+
 // ES Module workaround for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,146 +42,145 @@ db.connect((err) => {
   console.log("🟢 Successfully connected to the database.");
 
   // --- Configuration & Middleware ---
-
-  // Set EJS as the template engine
-  app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
   // Middleware
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 
-  // Session Middleware Configuration
-  app.use(session({
-    secret: 'GyanGangaSecretKey', // Change this to a random string
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 // Cookie expires in 1 day
-    }
-  }));
-  app.use(flash());
-
-  // --- Helper Functions for Database Logic ---
-
-  async function handleSignup(fullName, username, email, password, role) {
-    try {
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      const result = await db.query(
-        "INSERT INTO users (full_name, username, email, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [fullName, username, email, hashedPassword, role]
-      );
-      console.log("✅ New user created:", result.rows[0]);
-      return { success: true };
-    } catch (err) {
-      console.error("❌ Error during signup:", err.message);
-      return { success: false, error: err };
-    }
+// Session Middleware Configuration
+app.use(session({
+  secret: 'GyanGangaSecretKey', // Change this to a random string
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 // Cookie expires in 1 day
   }
+}));
+app.use(flash());
 
-  async function handleLogin(username, password) {
-    try {
-      const result = await db.query("SELECT * FROM users WHERE username = $1", [username]);
-      if (result.rows.length === 0) {
-        return { success: false };
-      }
-      const user = result.rows[0];
-      const passwordMatch = await bcrypt.compare(password, user.password_hash);
-      if (passwordMatch) {
-        return { success: true, user: user };
-      } else {
-        return { success: false };
-      }
-    } catch (err) {
-      console.error("❌ Error during login:", err);
-      return { success: false, error: err };
-    }
+// --- Helper Functions for Database Logic ---
+
+async function handleSignup(fullName, username, email, password, role) {
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const result = await db.query(
+      "INSERT INTO users (full_name, username, email, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [fullName, username, email, hashedPassword, role]
+    );
+    console.log("✅ New user created:", result.rows[0]);
+    return { success: true };
+  } catch (err) {
+    console.error("❌ Error during signup:", err.message);
+    return { success: false, error: err };
   }
+}
 
-  // --- Routes ---
-app.get('/', (req, res) => {
-  if (req.session.user) {
-    // Check the user's role
-    if (req.session.user.role === 'teacher') {
-      res.render('teacher_dashboard', { user: req.session.user });
+async function handleLogin(username, password) {
+  try {
+    const result = await db.query("SELECT * FROM users WHERE username = $1", [username]);
+    if (result.rows.length === 0) {
+      return { success: false };
+    }
+    const user = result.rows[0];
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    if (passwordMatch) {
+      return { success: true, user: user };
     } else {
-      res.render('home', { user: req.session.user }); // Student homepage
+      return { success: false };
     }
-  } else {
-    // If no user is logged in, render the public landing page
-    res.render('index', { user: null });
+  } catch (err) {
+    console.error("❌ Error during login:", err);
+    return { success: false, error: err };
   }
+}
+
+// --- Routes ---
+app.get('/', (req, res) => {
+if (req.session.user) {
+  // Check the user's role
+  if (req.session.user.role === 'teacher') {
+    res.render('teacher_dashboard', { user: req.session.user });
+  } else {
+    res.render('home', { user: req.session.user }); // Student homepage
+  }
+} else {
+  // If no user is logged in, render the public landing page
+  res.render('index', { user: null });
+}
 });
 
 // UPDATED: Dashboard route also forks based on user role
 app.get('/dashboard', (req, res) => {
-  if (req.session.user) {
-    if (req.session.user.role === 'teacher') {
-      res.render('teacher_dashboard', { user: req.session.user });
-    } else {
-      // Student dashboard (the stats page)
-      
-      // We'll use mock data for now, as in the previous step
-      const courseProgressData = {
-        maths: 75,
-        science: 50,
-        technology: 90,
-        engineering: 25,
-      };
-      res.render('dashboard', { 
-        user: req.session.user,
-        progress: courseProgressData
-      });
-    }
+if (req.session.user) {
+  if (req.session.user.role === 'teacher') {
+    res.render('teacher_dashboard', { user: req.session.user });
   } else {
-    res.redirect('/login');
+    // Student dashboard (the stats page)
+    
+    // We'll use mock data for now, as in the previous step
+    const courseProgressData = {
+      maths: 75,
+      science: 50,
+      technology: 90,
+      engineering: 25,
+    };
+    res.render('dashboard', { 
+      user: req.session.user,
+      progress: courseProgressData
+    });
   }
+} else {
+  res.redirect('/login');
+}
 });
 
-  // Static routes for login/signup pages
+// Static routes for login/signup pages
 app.get('/login', (req, res) => {
-  // Pass any flash messages to the template
-  res.render('login', { messages: req.flash() }); 
+// Pass any flash messages to the template
+res.render('login', { messages: req.flash() }); 
 });
 
 app.get('/signup', (req, res) => {
-  // Pass any flash messages to the template
-  res.render('register', { messages: req.flash() });
+// Pass any flash messages to the template
+res.render('register', { messages: req.flash() });
 });
 
-  // Logout Route
-  app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return console.error(err);
-      }
-      res.redirect('/'); // Redirect to homepage after logout
-    });
+// Logout Route
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return console.error(err);
+    }
+    res.redirect('/'); // Redirect to homepage after logout
   });
+});
 
-  app.post('/signup', async (req, res) => {
-  const { fullName, username, email, password, role } = req.body;
-  const result = await handleSignup(fullName, username, email, password, role);
+app.post('/signup', async (req, res) => {
+const { fullName, username, email, password, role } = req.body;
+const result = await handleSignup(fullName, username, email, password, role);
 
-  if (result.success) {
-    req.flash('success', 'Registration successful! You can now log in.');
-    res.redirect('/login');
-  } else {
-    req.flash('error', 'An error occurred. The username or email may be taken.');
-    res.redirect('/signup');
-  }
+if (result.success) {
+  req.flash('success', 'Registration successful! You can now log in.');
+  res.redirect('/login');
+} else {
+  req.flash('error', 'An error occurred. The username or email may be taken.');
+  res.redirect('/signup');
+}
 });
 
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const result = await handleLogin(username, password);
+const { username, password } = req.body;
+const result = await handleLogin(username, password);
 
-  if (result.success) {
-    req.session.user = result.user;
-    res.redirect('/');
-  } else {
-    req.flash('error', 'Invalid username or password.');
-    res.redirect('/login');
-  }
+if (result.success) {
+  req.session.user = result.user;
+  res.redirect('/');
+} else {
+  req.flash('error', 'Invalid username or password.');
+  res.redirect('/login');
+}
 });
 
 // GET Route to display the profile page
