@@ -1,0 +1,111 @@
+<%- include('partials/header') %>
+
+<div class="profile-container container">
+    <section class="page-title">
+        <h2>Create New Assessment</h2>
+        <p>Build a new Quiz, Test, or Assignment for your class.</p>
+    </section>
+    
+    <%- include('partials/flash-messages') %>
+
+    <form action="/teacher/create-assessment" method="POST" class="profile-form" id="assessment-form">
+        
+        <div class="form-group">
+            <label for="assessment_type">Type of Assessment</label>
+            <select id="assessment_type" name="assessment_type" required onchange="toggleDueDate(this.value)">
+                <option value="quiz">Quiz</option>
+                <option value="test">Test</option>
+                <option value="q_assignment">Assignment (Question-based)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description / Instructions</label>
+            <textarea id="description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="classroom_id">Assign to Classroom</label>
+            <select id="classroom_id" name="classroom_id" required>
+                <% classrooms.forEach(c => { %>
+                    <option value="<%= c.id %>"><%= c.class_name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="form-group" id="due-date-field" style="display: none;">
+            <label for="due_date">Due Date</label>
+            <input type="date" id="due_date" name="due_date">
+        </div>
+
+        <h3 class="questions-header">Questions</h3>
+        <div id="questions-container">
+            </div>
+        <button type="button" class="btn btn-secondary" id="add-question-btn">Add Question</button>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Assessment</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    document.getElementById('add-question-btn').addEventListener('click', () => {
+        questionCount++;
+        const container = document.getElementById('questions-container');
+        
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-block';
+        questionDiv.innerHTML = `
+            <h4>Question ${questionCount}</h4>
+            <div class="form-group">
+                <label for="q-text-${questionCount}">Question Text</label>
+                <input type="text" id="q-text-${questionCount}" name="questions[${questionCount-1}][text]" required>
+            </div>
+            <div class="form-group">
+                <label>Options (Check the correct answer)</label>
+                <div class="option-input">
+                    <input type="radio" name="questions[${questionCount-1}][correct]" value="0" required>
+                    <input type="text" name="questions[${questionCount-1}][options][0]" placeholder="Option A" required>
+                </div>
+                <div class="option-input">
+                    <input type="radio" name="questions[${questionCount-1}][correct]" value="1">
+                    <input type="text" name="questions[${questionCount-1}][options][1]" placeholder="Option B" required>
+                </div>
+                <div class="option-input">
+                    <input type="radio" name="questions[${questionCount-1}][correct]" value="2">
+                    <input type="text" name="questions[${questionCount-1}][options][2]" placeholder="Option C">
+                </div>
+                <div class="option-input">
+                    <input type="radio" name="questions[${questionCount-1}][correct]" value="3">
+                    <input type="text" name="questions[${questionCount-1}][options][3]" placeholder="Option D">
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="removeQuestion(this)">Remove Question</button>
+        `;
+        container.appendChild(questionDiv);
+    });
+
+    function removeQuestion(button) {
+        button.parentElement.remove();
+        // We would re-number the questions here in a more complex app, but for now this is fine.
+    }
+
+    function toggleDueDate(type) {
+        const dueDateField = document.getElementById('due-date-field');
+        if (type === 'q_assignment') {
+            dueDateField.style.display = 'block';
+        } else {
+            dueDateField.style.display = 'none';
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyan Ganga</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <a href="/" class="logo">Gyan Ganga 📖</a>
+            <nav class="main-nav">
+                <% if (user) { %>
+                    <div class="nav-dropdown">
+                        <button class="nav-account-btn">Welcome, <%= user.full_name %> ▼</button>
+                        <div class="dropdown-content">
+                            <a href="/profile">Profile</a>
+                            <a href="/dashboard">Dashboard</a>
+                            <!-- <a href="/leaderboard">Leaderboard</a> -->
+                            <a href="/logout">Logout</a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/login" class="nav-link btn btn-secondary">Login</a>
+                    <a href="/signup" class="nav-link btn btn-primary">Sign Up</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+    <main>

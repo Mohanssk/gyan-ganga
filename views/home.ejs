@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-container container">
+
+    <section class="search-section">
+        <form action="/search" method="GET" class="search-bar">
+            <input type="text" name="query" placeholder="Search for a topic, mission, or concept...">
+            <button type="submit">Search</button>
+        </form>
+    </section>
+
+    <section class="quick-actions">
+        <a href="/assignments" class="action-card">
+            <div class="action-icon">📝</div>
+            <h4>Assignments</h4>
+            <p>View your pending and completed tasks.</p>
+        </a>
+        <a href="/quizzes" class="action-card">
+            <div class="action-icon">✅</div>
+            <h4>Quizzes</h4>
+            <p>Test your knowledge and earn XP.</p>
+        </a>
+        <a href="/tests" class="action-card">
+            <div class="action-icon">🧪</div>
+            <h4>Tests</h4>
+            <p>Prepare for your upcoming exams.</p>
+        </a>
+    </section>
+    <section class="course-categories">
+        <h2>Recommended Courses</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <img src="/images/maths.png" alt="Mathematics">
+                <h3>Mathematics</h3>
+                <p>From Algebra to Calculus, begin your journey.</p>
+                <a href="/courses/maths" class="btn btn-secondary">Explore</a>
+            </div>
+            <div class="category-card">
+                <img src="/images/science.png" alt="Science">
+                <h3>Science</h3>
+                <p>Discover Physics, Chemistry, and Biology.</p>
+                <a href="/courses/science" class="btn btn-secondary">Explore</a>
+            </div>
+            <div class="category-card">
+                <img src="/images/technology.png" alt="Technology">
+                <h3>Technology</h3>
+                <p>Learn coding, circuits, and more.</p>
+                <a href="/courses/technology" class="btn btn-secondary">Explore</a>
+            </div>
+            <div class="category-card">
+                <img src="/images/engineering.png" alt="Engineering">
+                <h3>Engineering</h3>
+                <p>Principles of design and innovation.</p>
+                <a href="/courses/engineering" class="btn btn-secondary">Explore</a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<%- include('partials/footer') %>

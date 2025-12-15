@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+
+<div class="profile-container container">
+
+    <div id="view-mode">
+        <h2>Your Profile</h2>
+        <div class="profile-card">
+            <div class="profile-field">
+                <label>Full Name</label>
+                <p><%= user.full_name %></p>
+            </div>
+            <div class="profile-field">
+                <label>Username</label>
+                <p><%= user.username %></p>
+            </div>
+            <div class="profile-field">
+                <label>Email Address</label>
+                <p><%= user.email %></p>
+            </div>
+            <div class="profile-field">
+                <label>Phone Number</label>
+                <p><%= user.phone_number || 'Not provided' %></p>
+            </div>
+            <div class="profile-field">
+                <label>School Name</label>
+                <p><%= user.school_name || 'Not provided' %></p>
+            </div>
+            <div class="profile-field">
+                <label>Grade / Class</label>
+                <p><%= user.grade || 'Not provided' %></p>
+            </div>
+            <div class="profile-field">
+                <label>City</label>
+                <p><%= user.city || 'Not provided' %></p>
+            </div>
+        </div>
+        <button id="edit-btn" class="btn btn-primary">Edit Profile</button>
+    </div>
+
+    <div id="edit-mode" style="display: none;">
+        <h2>Edit Your Profile</h2>
+        <form action="/profile" method="POST" class="profile-form">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" value="<%= user.full_name %>" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= user.phone_number || '' %>">
+            </div>
+            <div class="form-group">
+                <label for="schoolName">School Name</label>
+                <input type="text" id="schoolName" name="schoolName" value="<%= user.school_name || '' %>">
+            </div>
+            <div class="form-group">
+                <label for="grade">Grade / Class</label>
+                <input type="text" id="grade" name="grade" value="<%= user.grade || '' %>">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" value="<%= user.city || '' %>">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Simple JavaScript to toggle between view and edit modes
+    const viewMode = document.getElementById('view-mode');
+    const editMode = document.getElementById('edit-mode');
+    const editBtn = document.getElementById('edit-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    editBtn.addEventListener('click', () => {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        editMode.style.display = 'none';
+        viewMode.style.display = 'block';
+    });
+</script>
+
+<%- include('partials/footer') %>

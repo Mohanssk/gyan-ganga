@@ -1,0 +1,160 @@
+<%- include('partials/header') %>
+
+<div class="mission-page-container container">
+
+    <div class="mission-content-area">
+        <div class="mission-player-section">
+            <div class="video-player-wrapper">
+                <video id="mission-video-player" preload="auto" width="100%" height="auto">
+                    <source src="<%= currentVideo.video_url %>" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+                <div class="custom-controls">
+                    <button id="play-pause-btn" class="player-btn">▶</button>
+                    <button id="rewind-btn" class="player-btn">⏪</button>
+                    <button id="forward-btn" class="player-btn">⏩</button>
+                    
+                    <div class="volume-control">
+                        <button id="mute-unmute-btn" class="player-btn">🔇</button>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+                    </div>
+
+                    <div class="settings-dropdown">
+                        <button class="player-btn">⚙️</button>
+                        <div class="settings-content">
+                            <h4>Quality</h4>
+                            <select id="quality-select">
+                                <option value="1080p">1080p</option>
+                                <option value="720p" selected>720p</option>
+                                <option value="480p">480p</option>
+                                <option value="360p">360p</option>
+                            </select>
+                            <h4>Language</h4>
+                            <select id="language-select">
+                                <option value="english" selected>English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="telugu">Telugu</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="mission-details">
+                <h3><%= currentMission.mission_title %></h3>
+                <p><strong>Topic:</strong> <%= currentMission.topic_name %></p>
+                <p><strong>Grade:</strong> <%= currentMission.grade_level %></p>
+                <p><%= currentMission.mission_description %></p>
+            </section>
+        </div>
+
+        <div class="mission-sidebar">
+            <section class="current-upcoming-missions">
+                <h3>Missions in <%= currentMission.topic_name %></h3>
+                <ul class="mission-list">
+                    <% allTopicMissions.forEach(mission => { %>
+                        <li class="<%= mission.id === currentMission.id ? 'active-mission' : '' %>">
+                            <a href="/mission/<%= mission.id %>">
+                                <%= mission.mission_order %>. <%= mission.mission_title %>
+                                <% if (mission.id === currentMission.id) { %> (Current) <% } %>
+                            </a>
+                        </li>
+                    <% }); %>
+                </ul>
+            </section>
+            </div>
+    </div>
+
+</div>
+
+<script>
+    // Access server-side data
+    const allVideos = <%- JSON.stringify(videos) %>;
+    const currentMissionId = <%= currentMission.id %>;
+    const initialVideoUrl = "<%= currentVideo.video_url %>";
+
+    // Get video player elements
+    const videoPlayer = document.getElementById('mission-video-player');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const rewindBtn = document.getElementById('rewind-btn');
+    const forwardBtn = document.getElementById('forward-btn');
+    const muteUnmuteBtn = document.getElementById('mute-unmute-btn');
+    const volumeSlider = document.getElementById('volume-slider');
+    const qualitySelect = document.getElementById('quality-select');
+    const languageSelect = document.getElementById('language-select');
+
+    // --- Video Player Controls ---
+    playPauseBtn.addEventListener('click', () => {
+        if (videoPlayer.paused) {
+            videoPlayer.play();
+            playPauseBtn.textContent = '⏸';
+        } else {
+            videoPlayer.pause();
+            playPauseBtn.textContent = '▶';
+        }
+    });
+
+    rewindBtn.addEventListener('click', () => {
+        videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+    });
+
+    forwardBtn.addEventListener('click', () => {
+        videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+    });
+
+    muteUnmuteBtn.addEventListener('click', () => {
+        videoPlayer.muted = !videoPlayer.muted;
+        muteUnmuteBtn.textContent = videoPlayer.muted ? '🔇' : '🔊';
+    });
+
+    volumeSlider.addEventListener('input', () => {
+        videoPlayer.volume = volumeSlider.value;
+        if (videoPlayer.volume === 0) {
+            muteUnmuteBtn.textContent = '🔇';
+        } else {
+            muteUnmuteBtn.textContent = '🔊';
+        }
+    });
+
+    // --- Quality and Language Switching ---
+    function updateVideoSource() {
+        const selectedQuality = qualitySelect.value;
+        const selectedLanguage = languageSelect.value;
+        const currentVideoOrder = currentVideo.video_order; // Assuming we want to maintain the current video (lesson part)
+
+        const newVideo = allVideos.find(v => 
+            v.mission_id === currentMissionId &&
+            v.video_order === currentVideoOrder &&
+            v.language === selectedLanguage &&
+            v.quality === selectedQuality
+        );
+
+        if (newVideo && newVideo.video_url !== videoPlayer.src) {
+            const currentTime = videoPlayer.currentTime;
+            const isPaused = videoPlayer.paused;
+            
+            videoPlayer.src = newVideo.video_url;
+            videoPlayer.load(); // Reload the video source
+
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                videoPlayer.currentTime = currentTime; // Retain current time
+                if (!isPaused) {
+                    videoPlayer.play(); // Continue playing if it was playing
+                }
+            }, { once: true }); // Ensure this listener runs only once
+        } else if (!newVideo) {
+            console.warn(`No video found for mission ${currentMissionId}, order ${currentVideoOrder}, language ${selectedLanguage}, quality ${selectedQuality}`);
+            // Optionally display a message to the user that this combination isn't available
+        }
+    }
+
+    qualitySelect.addEventListener('change', updateVideoSource);
+    languageSelect.addEventListener('change', updateVideoSource);
+
+    // Initial setup for controls (e.g., set play/pause button based on initial state)
+    videoPlayer.addEventListener('play', () => { playPauseBtn.textContent = '⏸'; });
+    videoPlayer.addEventListener('pause', () => { playPauseBtn.textContent = '▶'; });
+</script>
+
+<%- include('partials/footer') %>

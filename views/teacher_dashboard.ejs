@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-container container">
+
+    <section class="page-title">
+        <h2>Teacher Dashboard</h2>
+        <p>Welcome, <%= user.full_name %>. Manage your classes, content, and students here.</p>
+    </section>
+
+    <section class="teacher-actions">
+        <div class="action-grid">
+            <a href="/teacher/upload-video" class="action-card">
+                <div class="action-icon">🎥</div>
+                <h4>Upload Video</h4>
+                <p>Add a new video lesson to a course.</p>
+            </a>
+            
+            <a href="/teacher/create-assessment" class="action-card">
+                <div class="action-icon">📝</div>
+                <h4>Create Assignment</h4>
+                <p>Upload a new assignment for your class.</p>
+            </a>
+            
+            <a href="/teacher/create-assessment" class="action-card">
+                <div class="action-icon">✅</div>
+                <h4>Create Quiz</h4>
+                <p>Build a new quiz for your students.</p>
+            </a>
+            
+            <a href="/teacher/my-students" class="action-card">
+                <div class="action-icon">👥</div>
+                <h4>My Students</h4>
+                <p>View student profiles and progress.</p>
+            </a>
+            <a href="/teacher/my-classes" class="action-card">
+                <div class="action-icon">🏫</div>
+                <h4>My Classrooms</h4>
+                <p>Manage your classrooms and student enrollments.</p>
+            </a>
+        </div>
+    </section>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+
+<div class="leaderboard-container container">
+    <section class="page-title">
+        <h2>Leaderboard</h2>
+        <p>See who's at the top of the learning adventure!</p>
+    </section>
+
+    <div class="leaderboard-table-wrapper">
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>City</th>
+                    <th>XP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% topUsers.forEach((player, index) => { %>
+                    <tr class="<%= (player.id === user.id) ? 'current-user-rank' : '' %>">
+                        <td><%= index + 1 %></td>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.city || 'N/A' %></td>
+                        <td><%= player.xp %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

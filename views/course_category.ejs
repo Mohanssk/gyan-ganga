@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<div class="course-page-container container">
+
+    <section class="page-title">
+        <h2><%= category.charAt(0).toUpperCase() + category.slice(1) %> Topics</h2>
+        <p>Select a topic to start your mission.</p>
+    </section>
+
+    <section class="topic-grid">
+        <% if (topics.length > 0) { %>
+            <% topics.forEach(topic => { %>
+                <div class="topic-card">
+                    <span class="grade-badge">Grade <%= topic.grade_level %></span>
+                    <h3><%= topic.topic_name %></h3>
+                    <p><%= topic.description %></p>
+                    <a href="/mission/<%= topic.id %>" class="btn btn-primary">Start Mission</a>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No topics found for this category yet. Check back soon!</p>
+        <% } %>
+    </section>
+
+</div>
+
+<%- include('partials/footer') %>

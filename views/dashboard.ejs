@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-container container">
+
+    <section class="page-title">
+        <h2>Your Dashboard</h2>
+        <p>A quick overview of your progress and achievements.</p>
+    </section>
+
+    <section class="stats-overview">
+        <div class="stat-card"><h4>Experience Points</h4><p>XP 1,250</p></div>
+        <div class="stat-card"><h4>Gyaan Coins</h4><p>💰 340</p></div>
+        <div class="stat-card"><h4>Badges Earned</h4><p>🏆 5</p></div>
+    </section>
+
+    <section class="course-progress">
+        <h2>Course Progress</h2>
+        <div class="progress-selector">
+            <select id="course-select" aria-label="Select a course to see progress">
+                <option value="maths">Mathematics</option>
+                <option value="science">Science</option>
+                <option value="technology">Technology</option>
+                <option value="engineering">Engineering</option>
+            </select>
+            <div class="progress-display">
+                <div class="progress-bar-container">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <span id="progress-percentage" class="progress-percentage"></span>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // Safely pass the progress data from the server to this script
+    const progressData = <%- JSON.stringify(progress) %>;
+
+    // Get references to the HTML elements
+    const courseSelect = document.getElementById('course-select');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const progressPercentage = document.getElementById('progress-percentage');
+
+    // Function to update the progress bar and percentage text
+    function updateProgress(course) {
+        const percentage = progressData[course] || 0;
+        
+        // Update the visual elements
+        progressPercentage.textContent = percentage + '% Complete';
+        progressBarFill.style.width = percentage + '%';
+    }
+
+    // Add an event listener to the dropdown
+    courseSelect.addEventListener('change', (event) => {
+        updateProgress(event.target.value);
+    });
+
+    // Set the initial state when the page loads
+    updateProgress(courseSelect.value);
+</script>
+
+<%- include('partials/footer') %>
