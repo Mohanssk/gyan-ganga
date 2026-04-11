@@ -123,6 +123,81 @@ npm start
 - `npm run migrate` - apply pending SQL migrations
 - `npm run migrate:status` - view migration status
 
+## How to Use This Website
+
+This guide explains exactly how students and teachers should use the platform day to day.
+
+### 1) First time setup for any user
+1. Open the website home page.
+2. Click Sign Up.
+3. Select your role carefully:
+	Student: for learning, joining classes, taking assessments.
+	Teacher: for creating classes, content, and assessments.
+4. Log in with your username and password.
+5. After login, you will land on your role-based dashboard.
+
+### 2) Student guide (learning flow)
+1. Join your class:
+	Go to dashboard and enter the classroom code shared by your teacher.
+2. Explore learning content:
+	Open course categories and select a topic.
+3. Complete missions:
+	Watch video lessons, use controls (speed, volume, fullscreen), and continue mission steps.
+4. Take assessments:
+	Open Assignments, Quizzes, or Tests and submit answers before due dates.
+5. Track progress:
+	Check XP, coins, badges, and leaderboard rank from dashboard/leaderboard.
+6. Keep profile updated:
+	Use Profile to edit personal details.
+
+### 3) Teacher guide (teaching flow)
+1. Create a classroom:
+	Open My Classrooms and add class name, subject, and grade.
+2. Share class code:
+	Give the generated code to students so they can join.
+3. Add learning content:
+	Use Upload Video to add mission videos.
+4. Create assessments:
+	Use Create Assessment to add assignments, quizzes, or tests with questions.
+5. Monitor performance:
+	Open Assessment Results to view submission stats and student-wise details.
+6. Review student answers:
+	Open each submission to see question-level answers and correctness.
+7. Manage your learners:
+	Use My Students to view enrolled students and search quickly.
+
+### 4) Assessment status meanings
+- Pending: student has not submitted yet.
+- Completed: submission is recorded.
+- Overdue: due date passed before submission.
+
+### 5) Practical tips
+- Teachers should create classrooms first, then upload content and assessments.
+- Students should join a class before expecting content to appear.
+- If a page looks empty, verify class enrollment and available data.
+
+## Offline Capability Guide
+
+This project includes a service worker based offline mode.
+
+### What works offline
+- Previously visited pages can open from cache.
+- Static assets like CSS, images, and cached script/font files can load offline.
+- If a requested page is unavailable in cache, the app shows an offline fallback page.
+
+### What does not work offline
+- Login, signup, form submissions, and assessment submissions.
+- Any feature that requires live database reads/writes.
+
+### How to showcase offline mode (demo steps)
+1. Start the app and open the website while online.
+2. Visit key pages you want to demo (dashboard, courses, mission, assessments list).
+3. Open browser DevTools and switch network to Offline.
+4. Refresh one of the visited pages to show cached content still loads.
+5. Open a new unvisited route to show the custom offline fallback page.
+6. Switch network back to Online and refresh.
+
+
 ## Technical Core Routes
 
 ### Public / Auth
@@ -201,80 +276,6 @@ npm start
 | GET /teacher/assessment-results | List all teacher assessments with stats |
 | GET /teacher/assessment-results/:type/:id | Show submissions for one assessment |
 | GET /teacher/assessment-results/:type/:assessmentId/submissions/:submissionId | Show detailed student answers |
-
-## How to Use This Website
-
-This guide explains exactly how students and teachers should use the platform day to day.
-
-### 1) First time setup for any user
-1. Open the website home page.
-2. Click Sign Up.
-3. Select your role carefully:
-	Student: for learning, joining classes, taking assessments.
-	Teacher: for creating classes, content, and assessments.
-4. Log in with your username and password.
-5. After login, you will land on your role-based dashboard.
-
-### 2) Student guide (learning flow)
-1. Join your class:
-	Go to dashboard and enter the classroom code shared by your teacher.
-2. Explore learning content:
-	Open course categories and select a topic.
-3. Complete missions:
-	Watch video lessons, use controls (speed, volume, fullscreen), and continue mission steps.
-4. Take assessments:
-	Open Assignments, Quizzes, or Tests and submit answers before due dates.
-5. Track progress:
-	Check XP, coins, badges, and leaderboard rank from dashboard/leaderboard.
-6. Keep profile updated:
-	Use Profile to edit personal details.
-
-### 3) Teacher guide (teaching flow)
-1. Create a classroom:
-	Open My Classrooms and add class name, subject, and grade.
-2. Share class code:
-	Give the generated code to students so they can join.
-3. Add learning content:
-	Use Upload Video to add mission videos.
-4. Create assessments:
-	Use Create Assessment to add assignments, quizzes, or tests with questions.
-5. Monitor performance:
-	Open Assessment Results to view submission stats and student-wise details.
-6. Review student answers:
-	Open each submission to see question-level answers and correctness.
-7. Manage your learners:
-	Use My Students to view enrolled students and search quickly.
-
-### 4) Assessment status meanings
-- Pending: student has not submitted yet.
-- Completed: submission is recorded.
-- Overdue: due date passed before submission.
-
-### 5) Practical tips
-- Teachers should create classrooms first, then upload content and assessments.
-- Students should join a class before expecting content to appear.
-- If a page looks empty, verify class enrollment and available data.
-
-## Offline Capability Guide
-
-This project includes a service worker based offline mode.
-
-### What works offline
-- Previously visited pages can open from cache.
-- Static assets like CSS, images, and cached script/font files can load offline.
-- If a requested page is unavailable in cache, the app shows an offline fallback page.
-
-### What does not work offline
-- Login, signup, form submissions, and assessment submissions.
-- Any feature that requires live database reads/writes.
-
-### How to showcase offline mode (demo steps)
-1. Start the app and open the website while online.
-2. Visit key pages you want to demo (dashboard, courses, mission, assessments list).
-3. Open browser DevTools and switch network to Offline.
-4. Refresh one of the visited pages to show cached content still loads.
-5. Open a new unvisited route to show the custom offline fallback page.
-6. Switch network back to Online and refresh.
 
 ## Troubleshooting
 
