@@ -1,72 +1,50 @@
 <%- include('partials/header') %>
 
-<div class="profile-container container">
-
-    <div id="view-mode">
-        <h2>Your Profile</h2>
-        <div class="profile-card">
-            <div class="profile-field">
-                <label>Full Name</label>
-                <p><%= user.full_name %></p>
-            </div>
-            <div class="profile-field">
-                <label>Username</label>
-                <p><%= user.username %></p>
-            </div>
-            <div class="profile-field">
-                <label>Email Address</label>
-                <p><%= user.email %></p>
-            </div>
-            <div class="profile-field">
-                <label>Phone Number</label>
-                <p><%= user.phone_number || 'Not provided' %></p>
-            </div>
-            <div class="profile-field">
-                <label>School Name</label>
-                <p><%= user.school_name || 'Not provided' %></p>
-            </div>
-            <div class="profile-field">
-                <label>Grade / Class</label>
-                <p><%= user.grade || 'Not provided' %></p>
-            </div>
-            <div class="profile-field">
-                <label>City</label>
-                <p><%= user.city || 'Not provided' %></p>
-            </div>
+<div class="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+    <div id="view-mode" class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="mb-6 text-2xl font-extrabold leading-tight text-white sm:text-3xl">Your Profile</h2>
+        <div class="space-y-3">
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">Full Name</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.full_name %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">Username</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.username %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">Email Address</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.email %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">Phone Number</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.phone_number || 'Not provided' %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">School Name</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.school_name || 'Not provided' %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">Grade / Class</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.grade || 'Not provided' %></p></div>
+            <div class="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center sm:justify-between"><label class="text-xs uppercase tracking-[0.18em] text-slate-400">City</label><p class="text-sm font-semibold leading-relaxed text-slate-100 sm:text-base"><%= user.city || 'Not provided' %></p></div>
         </div>
-        <button id="edit-btn" class="btn btn-primary">Edit Profile</button>
+        <button id="edit-btn" class="mt-6 h-11 rounded-xl bg-cyan-500 px-5 text-sm font-semibold text-slate-950 transition duration-300 hover:bg-cyan-400">Edit Profile</button>
     </div>
 
-    <div id="edit-mode" style="display: none;">
-        <h2>Edit Your Profile</h2>
-        <form action="/profile" method="POST" class="profile-form">
+    <div id="edit-mode" style="display: none;" class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="mb-6 text-2xl font-extrabold leading-tight text-white sm:text-3xl">Edit Your Profile</h2>
+        <form action="/profile" method="POST" class="space-y-4">
             <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" value="<%= user.full_name %>" required>
+                <label for="fullName" class="mb-2 block text-sm font-semibold text-slate-200">Full Name</label>
+                <input type="text" id="fullName" name="fullName" value="<%= user.full_name %>" required class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                <label for="email" class="mb-2 block text-sm font-semibold text-slate-200">Email Address</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" required class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
             <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= user.phone_number || '' %>">
+                <label for="phoneNumber" class="mb-2 block text-sm font-semibold text-slate-200">Phone Number</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= user.phone_number || '' %>" class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
             <div class="form-group">
-                <label for="schoolName">School Name</label>
-                <input type="text" id="schoolName" name="schoolName" value="<%= user.school_name || '' %>">
+                <label for="schoolName" class="mb-2 block text-sm font-semibold text-slate-200">School Name</label>
+                <input type="text" id="schoolName" name="schoolName" value="<%= user.school_name || '' %>" class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
             <div class="form-group">
-                <label for="grade">Grade / Class</label>
-                <input type="text" id="grade" name="grade" value="<%= user.grade || '' %>">
+                <label for="grade" class="mb-2 block text-sm font-semibold text-slate-200">Grade / Class</label>
+                <input type="text" id="grade" name="grade" value="<%= user.grade || '' %>" class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
             <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" value="<%= user.city || '' %>">
+                <label for="city" class="mb-2 block text-sm font-semibold text-slate-200">City</label>
+                <input type="text" id="city" name="city" value="<%= user.city || '' %>" class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
             </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+            <div class="form-actions flex flex-wrap gap-3 pt-1">
+                <button type="submit" class="h-11 rounded-xl bg-cyan-500 px-5 text-sm font-semibold text-slate-950 transition duration-300 hover:bg-cyan-400">Save Changes</button>
+                <button type="button" id="cancel-btn" class="h-11 rounded-xl border border-slate-600 px-5 text-sm font-semibold text-slate-200 transition duration-300 hover:bg-slate-800">Cancel</button>
             </div>
         </form>
     </div>

@@ -1,111 +1,111 @@
 <%- include('partials/header') %>
 
-<div class="profile-container container">
-    <section class="page-title">
-        <h2>Create New Assessment</h2>
-        <p>Build a new Quiz, Test, or Assignment for your class.</p>
-    </section>
-    
+<div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
     <%- include('partials/flash-messages') %>
 
-    <form action="/teacher/create-assessment" method="POST" class="profile-form" id="assessment-form">
-        
-        <div class="form-group">
-            <label for="assessment_type">Type of Assessment</label>
-            <select id="assessment_type" name="assessment_type" required onchange="toggleDueDate(this.value)">
-                <option value="quiz">Quiz</option>
-                <option value="test">Test</option>
-                <option value="q_assignment">Assignment (Question-based)</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="description">Description / Instructions</label>
-            <textarea id="description" name="description" rows="3"></textarea>
-        </div>
+    <section class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl">Create New Assessment</h2>
+        <p class="mt-2 text-slate-300">Create assignments, quizzes, or tests for your classroom.</p>
 
-        <div class="form-group">
-            <label for="classroom_id">Assign to Classroom</label>
-            <select id="classroom_id" name="classroom_id" required>
-                <% classrooms.forEach(c => { %>
-                    <option value="<%= c.id %>"><%= c.class_name %></option>
-                <% }); %>
-            </select>
-        </div>
-
-        <div class="form-group" id="due-date-field" style="display: none;">
-            <label for="due_date">Due Date</label>
-            <input type="date" id="due_date" name="due_date">
-        </div>
-
-        <h3 class="questions-header">Questions</h3>
-        <div id="questions-container">
+        <form action="/teacher/create-assessment" method="POST" class="mt-6 space-y-5">
+            <div class="form-group">
+                <label for="classroom_id" class="mb-2 block text-sm font-semibold text-slate-200">Select Classroom *</label>
+                <select id="classroom_id" name="classroom_id" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                    <option value="">Choose a classroom...</option>
+                    <% if (classrooms && classrooms.length > 0) { %>
+                        <% classrooms.forEach((classroom) => { %>
+                            <option value="<%= classroom.id %>"><%= classroom.class_name %> (<%= classroom.subject %> - Grade <%= classroom.grade_level %>)</option>
+                        <% }) %>
+                    <% } %>
+                </select>
             </div>
-        <button type="button" class="btn btn-secondary" id="add-question-btn">Add Question</button>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create Assessment</button>
-        </div>
-    </form>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div class="form-group">
+                    <label for="assessment_type" class="mb-2 block text-sm font-semibold text-slate-200">Assessment Type *</label>
+                    <select id="assessment_type" name="assessment_type" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                        <option value="">Select type...</option>
+                        <option value="assignment">Assignment</option>
+                        <option value="quiz">Quiz</option>
+                        <option value="test">Test</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject" class="mb-2 block text-sm font-semibold text-slate-200">Subject *</label>
+                    <input type="text" id="subject" name="subject" placeholder="e.g., Mathematics" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title" class="mb-2 block text-sm font-semibold text-slate-200">Title *</label>
+                <input type="text" id="title" name="title" placeholder="e.g., Algebra Basics Quiz" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="mb-2 block text-sm font-semibold text-slate-200">Description</label>
+                <textarea id="description" name="description" rows="3" placeholder="Describe what this assessment covers..." class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div class="form-group">
+                    <label for="due_date" class="mb-2 block text-sm font-semibold text-slate-200">Due Date</label>
+                    <input type="date" id="due_date" name="due_date" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                </div>
+
+                <div class="form-group">
+                    <label for="max_score" class="mb-2 block text-sm font-semibold text-slate-200">Maximum Score *</label>
+                    <input type="number" id="max_score" name="max_score" min="1" value="100" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-4">
+                <h3 class="text-lg font-bold text-white">Questions</h3>
+                <div id="questions-container" class="mt-4 space-y-4"></div>
+                <button type="button" onclick="addQuestion()" class="mt-4 rounded-xl border border-cyan-500/60 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/15">+ Add Question</button>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button type="submit" class="rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400">Create Assessment</button>
+                <a href="/dashboard" class="rounded-xl border border-slate-600 px-5 py-3 text-sm font-bold text-slate-200 transition hover:bg-slate-800">Cancel</a>
+            </div>
+        </form>
+    </section>
 </div>
 
 <script>
-    let questionCount = 0;
+let questionCount = 0;
 
-    document.getElementById('add-question-btn').addEventListener('click', () => {
-        questionCount++;
-        const container = document.getElementById('questions-container');
-        
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question-block';
-        questionDiv.innerHTML = `
-            <h4>Question ${questionCount}</h4>
-            <div class="form-group">
-                <label for="q-text-${questionCount}">Question Text</label>
-                <input type="text" id="q-text-${questionCount}" name="questions[${questionCount-1}][text]" required>
+function addQuestion() {
+    questionCount++;
+    const container = document.getElementById('questions-container');
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'rounded-xl border border-slate-700 bg-slate-900/80 p-4';
+    questionDiv.innerHTML = `
+        <div class="mb-3 flex items-center justify-between">
+            <h4 class="text-sm font-semibold text-slate-100">Question ${questionCount}</h4>
+            <button type="button" onclick="removeQuestion(this)" class="text-sm font-semibold text-rose-300 hover:text-rose-200">Remove</button>
+        </div>
+        <div class="space-y-3">
+            <input type="text" name="questions[]" placeholder="Enter question text" required class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input type="text" name="options_a[]" placeholder="Option A" required class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+                <input type="text" name="options_b[]" placeholder="Option B" required class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+                <input type="text" name="options_c[]" placeholder="Option C" required class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+                <input type="text" name="options_d[]" placeholder="Option D" required class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
             </div>
-            <div class="form-group">
-                <label>Options (Check the correct answer)</label>
-                <div class="option-input">
-                    <input type="radio" name="questions[${questionCount-1}][correct]" value="0" required>
-                    <input type="text" name="questions[${questionCount-1}][options][0]" placeholder="Option A" required>
-                </div>
-                <div class="option-input">
-                    <input type="radio" name="questions[${questionCount-1}][correct]" value="1">
-                    <input type="text" name="questions[${questionCount-1}][options][1]" placeholder="Option B" required>
-                </div>
-                <div class="option-input">
-                    <input type="radio" name="questions[${questionCount-1}][correct]" value="2">
-                    <input type="text" name="questions[${questionCount-1}][options][2]" placeholder="Option C">
-                </div>
-                <div class="option-input">
-                    <input type="radio" name="questions[${questionCount-1}][correct]" value="3">
-                    <input type="text" name="questions[${questionCount-1}][options][3]" placeholder="Option D">
-                </div>
-            </div>
-            <button type="button" class="btn btn-danger" onclick="removeQuestion(this)">Remove Question</button>
-        `;
-        container.appendChild(questionDiv);
-    });
+            <input type="text" name="correct_answers[]" placeholder="Correct answer (A, B, C, or D)" required pattern="[ABCDabcd]" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm uppercase text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+        </div>
+    `;
+    container.appendChild(questionDiv);
+}
 
-    function removeQuestion(button) {
-        button.parentElement.remove();
-        // We would re-number the questions here in a more complex app, but for now this is fine.
-    }
+function removeQuestion(button) {
+    button.closest('.rounded-xl').remove();
+}
 
-    function toggleDueDate(type) {
-        const dueDateField = document.getElementById('due-date-field');
-        if (type === 'q_assignment') {
-            dueDateField.style.display = 'block';
-        } else {
-            dueDateField.style.display = 'none';
-        }
-    }
+// Add first question by default
+addQuestion();
 </script>
 
 <%- include('partials/footer') %>

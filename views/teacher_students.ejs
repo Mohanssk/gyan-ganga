@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+
+<% const currentQuery = (typeof query !== 'undefined' && query) || (typeof searchQuery !== 'undefined' && searchQuery) || ''; %>
+
+<div class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl">My Students</h2>
+        <p class="mt-2 text-slate-300">View all students across your classrooms.</p>
+
+        <form action="/teacher/my-students" method="GET" class="mt-5 flex flex-col gap-3 sm:flex-row">
+            <input
+                type="text"
+                name="q"
+                value="<%= currentQuery %>"
+                placeholder="Search students by name, username, email, city, school, grade, or class..."
+                class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
+            >
+            <button type="submit" class="rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400">Search</button>
+            <% if (currentQuery) { %>
+                <a href="/teacher/my-students" class="rounded-xl border border-slate-600 px-6 py-3 text-sm font-bold text-slate-200 transition hover:bg-slate-800">Clear</a>
+            <% } %>
+        </form>
+    </section>
+
+    <% if (students && students.length > 0) { %>
+        <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/85 shadow-card">
+            <table class="min-w-[980px] w-full border-collapse text-left">
+                <thead class="bg-slate-800/80 text-xs uppercase tracking-[0.18em] text-slate-300">
+                    <tr>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Student</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Username</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Email</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">City</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">School</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Grade</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Classroom</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Class Code</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Enrolled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% students.forEach((student) => { %>
+                        <tr class="border-t border-slate-800 bg-transparent">
+                            <td class="px-3 py-2 font-semibold text-slate-100 sm:px-4 sm:py-3"><%= student.full_name %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.username %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.email %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.city || '-' %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.school_name || '-' %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.grade || '-' %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= student.class_name %></td>
+                            <td class="px-3 py-2 text-emerald-300 sm:px-4 sm:py-3"><%= student.class_code %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= new Date(student.joined_at).toLocaleDateString() %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/85 p-4 text-slate-300 sm:p-6">
+            <% if (currentQuery) { %>
+                No students matched your search.
+            <% } else { %>
+                No students found yet. Share your classroom code with students to get started.
+            <% } %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

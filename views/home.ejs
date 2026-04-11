@@ -1,61 +1,94 @@
 <%- include('partials/header') %>
 
-<div class="dashboard-container container">
+<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+    <%- include('partials/flash-messages') %>
 
-    <section class="search-section">
-        <form action="/search" method="GET" class="search-bar">
-            <input type="text" name="query" placeholder="Search for a topic, mission, or concept...">
-            <button type="submit">Search</button>
+    <section class="mb-8 animate-fade-in-up">
+        <form action="/search" method="GET" class="rounded-2xl border border-slate-800 bg-slate-900/80 p-2 shadow-card">
+            <div class="flex flex-col gap-2 sm:flex-row">
+                <input type="text" name="query" placeholder="Search for a topic, mission, or concept..." class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+                <button type="submit" class="h-11 rounded-xl bg-cyan-500 px-6 text-sm font-semibold text-slate-950 transition duration-300 hover:bg-cyan-400">Search</button>
+            </div>
         </form>
     </section>
 
-    <section class="quick-actions">
-        <a href="/assignments" class="action-card">
-            <div class="action-icon">📝</div>
-            <h4>Assignments</h4>
-            <p>View your pending and completed tasks.</p>
+    <section class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <a href="/assignments" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:100ms]">
+            <div class="mb-4 text-3xl text-cyan-300">📝</div>
+            <h4 class="text-lg font-bold leading-tight text-white">Assignments</h4>
+            <p class="mt-2 text-sm leading-relaxed text-slate-300">View your pending and completed tasks.</p>
         </a>
-        <a href="/quizzes" class="action-card">
-            <div class="action-icon">✅</div>
-            <h4>Quizzes</h4>
-            <p>Test your knowledge and earn XP.</p>
+        <a href="/quizzes" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:180ms]">
+            <div class="mb-4 text-3xl text-emerald-300">✅</div>
+            <h4 class="text-lg font-bold leading-tight text-white">Quizzes</h4>
+            <p class="mt-2 text-sm leading-relaxed text-slate-300">Test your knowledge and earn XP.</p>
         </a>
-        <a href="/tests" class="action-card">
-            <div class="action-icon">🧪</div>
-            <h4>Tests</h4>
-            <p>Prepare for your upcoming exams.</p>
+        <a href="/tests" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:260ms]">
+            <div class="mb-4 text-3xl text-indigo-300">🧪</div>
+            <h4 class="text-lg font-bold leading-tight text-white">Tests</h4>
+            <p class="mt-2 text-sm leading-relaxed text-slate-300">Prepare for your upcoming exams.</p>
         </a>
     </section>
-    <section class="course-categories">
-        <h2>Recommended Courses</h2>
-        <div class="category-grid">
-            <div class="category-card">
-                <img src="/images/maths.png" alt="Mathematics">
-                <h3>Mathematics</h3>
-                <p>From Algebra to Calculus, begin your journey.</p>
-                <a href="/courses/maths" class="btn btn-secondary">Explore</a>
+
+    <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card animate-fade-in-up [animation-delay:320ms] sm:p-6">
+        <h2 class="text-xl font-bold leading-tight text-white sm:text-2xl">Join a Classroom</h2>
+        <p class="mt-2 text-sm leading-relaxed text-slate-300">Enter the class code shared by your teacher.</p>
+        <form action="/student/join-class" method="POST" class="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input type="text" name="class_code" placeholder="Enter class code (e.g. FE41AB)" maxlength="12" required class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+            <button type="submit" class="h-11 rounded-xl bg-cyan-500 px-6 text-sm font-semibold text-slate-950 transition duration-300 hover:bg-cyan-400">Join Class</button>
+        </form>
+    </section>
+
+    <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card animate-fade-in-up [animation-delay:380ms] sm:p-6">
+        <h2 class="text-xl font-bold leading-tight text-white sm:text-2xl">Your Classrooms</h2>
+        <% if (enrolledClasses && enrolledClasses.length > 0) { %>
+            <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <% enrolledClasses.forEach((classroom) => { %>
+                    <article class="rounded-xl border border-slate-800 bg-slate-950/90 p-5">
+                        <h3 class="text-lg font-bold leading-tight text-cyan-300"><%= classroom.class_name %></h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-300"><strong>Code:</strong> <%= classroom.class_code || 'N/A' %></p>
+                        <p class="text-sm leading-relaxed text-slate-300"><strong>Subject:</strong> <%= classroom.subject || 'N/A' %></p>
+                        <p class="text-sm leading-relaxed text-slate-300"><strong>Grade:</strong> <%= classroom.grade_level || 'N/A' %></p>
+                        <p class="text-sm leading-relaxed text-slate-300"><strong>Teacher:</strong> <%= classroom.teacher_name || 'N/A' %></p>
+                    </article>
+                <% }); %>
             </div>
-            <div class="category-card">
-                <img src="/images/science.png" alt="Science">
-                <h3>Science</h3>
-                <p>Discover Physics, Chemistry, and Biology.</p>
-                <a href="/courses/science" class="btn btn-secondary">Explore</a>
+        <% } else { %>
+            <div class="mt-4 rounded-xl border border-slate-800 bg-slate-950/90 p-4 text-sm text-slate-300">
+                You are not enrolled in any classroom yet.
             </div>
-            <div class="category-card">
-                <img src="/images/technology.png" alt="Technology">
-                <h3>Technology</h3>
-                <p>Learn coding, circuits, and more.</p>
-                <a href="/courses/technology" class="btn btn-secondary">Explore</a>
+        <% } %>
+    </section>
+
+    <section class="animate-fade-in-up [animation-delay:440ms]">
+        <h2 class="mb-5 text-xl font-bold leading-tight text-white sm:text-2xl">Recommended Courses</h2>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-glow sm:p-5">
+                <img src="/images/maths.svg" alt="Mathematics" class="mb-4 h-14 w-14 object-contain">
+                <h3 class="text-lg font-bold leading-tight text-white">Mathematics</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">From Algebra to Calculus, begin your journey.</p>
+                <a href="/courses/maths" class="mt-4 inline-flex h-10 items-center rounded-lg border border-cyan-500/60 px-4 text-xs font-semibold text-cyan-300 transition duration-300 hover:bg-cyan-500/15">Explore</a>
             </div>
-            <div class="category-card">
-                <img src="/images/engineering.png" alt="Engineering">
-                <h3>Engineering</h3>
-                <p>Principles of design and innovation.</p>
-                <a href="/courses/engineering" class="btn btn-secondary">Explore</a>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-glow sm:p-5">
+                <img src="/images/science.svg" alt="Science" class="mb-4 h-14 w-14 object-contain">
+                <h3 class="text-lg font-bold leading-tight text-white">Science</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Discover Physics, Chemistry, and Biology.</p>
+                <a href="/courses/science" class="mt-4 inline-flex h-10 items-center rounded-lg border border-cyan-500/60 px-4 text-xs font-semibold text-cyan-300 transition duration-300 hover:bg-cyan-500/15">Explore</a>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-glow sm:p-5">
+                <img src="/images/technology.svg" alt="Technology" class="mb-4 h-14 w-14 object-contain">
+                <h3 class="text-lg font-bold leading-tight text-white">Technology</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Learn coding, circuits, and more.</p>
+                <a href="/courses/technology" class="mt-4 inline-flex h-10 items-center rounded-lg border border-cyan-500/60 px-4 text-xs font-semibold text-cyan-300 transition duration-300 hover:bg-cyan-500/15">Explore</a>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-glow sm:p-5">
+                <img src="/images/engineering.svg" alt="Engineering" class="mb-4 h-14 w-14 object-contain">
+                <h3 class="text-lg font-bold leading-tight text-white">Engineering</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Principles of design and innovation.</p>
+                <a href="/courses/engineering" class="mt-4 inline-flex h-10 items-center rounded-lg border border-cyan-500/60 px-4 text-xs font-semibold text-cyan-300 transition duration-300 hover:bg-cyan-500/15">Explore</a>
             </div>
         </div>
     </section>
-
 </div>
 
 <%- include('partials/footer') %>

@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <section class="mb-7 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl"><%= assessment.title %></h2>
+        <p class="mt-2 text-slate-300"><%= assessment.description || 'No description provided.' %></p>
+
+        <div class="mt-5 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+            <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Type:</strong> <%= assessmentLabel || assessmentType %></div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Classroom:</strong> <%= assessment.class_name %></div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Total Questions:</strong> <%= questions.length %></div>
+            <% if (assessment.due_date) { %>
+                <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300 sm:col-span-2"><strong>Due Date:</strong> <%= new Date(assessment.due_date).toLocaleString() %></div>
+            <% } %>
+        </div>
+
+        <% if (previousSubmission) { %>
+            <div class="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                Last submitted on <%= new Date(previousSubmission.submitted_at).toLocaleString() %> with score <%= previousSubmission.score %>/<%= previousSubmission.total_questions %>.
+            </div>
+        <% } %>
+    </section>
+
+    <form action="/assessments/<%= assessmentType %>/<%= assessment.id %>/submit" method="POST" class="space-y-5">
+        <% questions.forEach((question, index) => { %>
+            <% const options = Object.entries(question.options || {}); %>
+            <article class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-5">
+                <h3 class="text-lg font-semibold text-white">Question <%= index + 1 %></h3>
+                <p class="mt-2 text-slate-200"><%= question.question_text %></p>
+
+                <% if (options.length > 0) { %>
+                    <div class="mt-4 space-y-2">
+                        <% options.forEach(([optionKey, optionValue], optionIndex) => { %>
+                            <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/80 p-3 transition hover:border-cyan-400/40">
+                                <input type="radio" name="answers[<%= question.id %>]" value="<%= optionKey %>" <%= optionIndex === 0 ? 'required' : '' %> class="mt-1 accent-cyan-400">
+                                <span class="text-slate-200"><strong><%= optionKey %>.</strong> <%= optionValue %></span>
+                            </label>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p class="mt-4 text-sm text-rose-300">Options are not available for this question.</p>
+                <% } %>
+            </article>
+        <% }); %>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-5 shadow-card">
+            <button type="submit" class="w-full rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400">Submit <%= assessmentLabel || 'Assessment' %></button>
+        </div>
+    </form>
+</div>
+
+<%- include('partials/footer') %>

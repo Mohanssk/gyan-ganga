@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl"><%= assessmentLabel || 'My Assessments' %></h2>
+        <p class="mt-2 text-slate-300">Assessments from your enrolled classrooms.</p>
+    </section>
+
+    <% if (assessments && assessments.length > 0) { %>
+        <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/85 shadow-card">
+            <table class="min-w-[760px] w-full border-collapse text-left">
+                <thead class="bg-slate-800/80 text-xs uppercase tracking-[0.18em] text-slate-300">
+                    <tr>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Title</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Classroom</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Questions</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Due Date</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Status</th>
+                        <th class="px-3 py-2 sm:px-4 sm:py-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% assessments.forEach((assessment) => { %>
+                        <tr class="border-t border-slate-800">
+                            <td class="px-3 py-2 font-semibold text-slate-100 sm:px-4 sm:py-3"><%= assessment.title %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.class_name %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.question_count || 0 %></td>
+                            <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.due_date ? new Date(assessment.due_date).toLocaleDateString() : 'No deadline' %></td>
+                            <td class="px-3 py-2 sm:px-4 sm:py-3">
+                                <% if (assessment.submitted_at) { %>
+                                    <span class="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">Completed</span>
+                                <% } else if (assessment.due_date && new Date(assessment.due_date) < new Date()) { %>
+                                    <span class="rounded-full border border-rose-400/40 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-200">Overdue</span>
+                                <% } else { %>
+                                    <span class="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">Pending</span>
+                                <% } %>
+                            </td>
+                            <td class="px-3 py-2 sm:px-4 sm:py-3">
+                                <% if (assessment.submitted_at) { %>
+                                    <a href="/assessments/<%= assessmentType %>/<%= assessment.id %>" class="rounded-lg border border-cyan-500/60 px-3 py-2 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/15">View Submission</a>
+                                <% } else { %>
+                                    <a href="/assessments/<%= assessmentType %>/<%= assessment.id %>" class="rounded-lg bg-cyan-500 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-cyan-400">Start</a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/85 p-4 text-slate-300 sm:p-6">No assessments available right now. Check back later.</div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

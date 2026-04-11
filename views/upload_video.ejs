@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <section class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl">Upload New Mission Video</h2>
+        <p class="mt-2 text-slate-300">Create topic content and attach an educational video.</p>
+
+        <form action="/teacher/upload-video" method="POST" enctype="multipart/form-data" class="mt-6 space-y-5">
+            <div>
+                <label for="topicName" class="mb-2 block text-sm font-semibold text-slate-200">Topic Name</label>
+                <input type="text" id="topicName" name="topicName" placeholder="e.g., Algebra Fundamentals" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none">
+            </div>
+
+            <div>
+                <label for="description" class="mb-2 block text-sm font-semibold text-slate-200">Description</label>
+                <textarea id="description" name="description" rows="4" placeholder="Write a short mission description..." required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div>
+                    <label for="category" class="mb-2 block text-sm font-semibold text-slate-200">Category</label>
+                    <select id="category" name="category" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                        <option value="maths">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="technology">Technology</option>
+                        <option value="engineering">Engineering</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="gradeLevel" class="mb-2 block text-sm font-semibold text-slate-200">Grade Level</label>
+                    <input type="number" id="gradeLevel" name="gradeLevel" min="6" max="12" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label for="videoFile" class="mb-2 block text-sm font-semibold text-slate-200">Video File</label>
+                <input type="file" id="videoFile" name="videoFile" accept="video/*" required class="block w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-cyan-500 file:px-4 file:py-2 file:font-semibold file:text-slate-950 hover:file:bg-cyan-400">
+            </div>
+
+            <button type="submit" class="w-full rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400">Upload Mission</button>
+        </form>
+    </section>
+</div>
+
+<%- include('partials/footer') %>

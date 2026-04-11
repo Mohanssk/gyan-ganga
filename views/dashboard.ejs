@@ -1,36 +1,34 @@
 <%- include('partials/header') %>
 
-<div class="dashboard-container container">
-
-    <section class="page-title">
-        <h2>Your Dashboard</h2>
-        <p>A quick overview of your progress and achievements.</p>
+<div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+    <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">Your Dashboard</h2>
+        <p class="mt-2 text-sm leading-relaxed text-slate-300 sm:text-base">A quick overview of your progress and achievements.</p>
     </section>
 
-    <section class="stats-overview">
-        <div class="stat-card"><h4>Experience Points</h4><p>XP 1,250</p></div>
-        <div class="stat-card"><h4>Gyaan Coins</h4><p>💰 340</p></div>
-        <div class="stat-card"><h4>Badges Earned</h4><p>🏆 5</p></div>
+    <section class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-5 shadow-card sm:p-6"><h4 class="text-xs uppercase tracking-[0.2em] text-slate-400">Experience Points</h4><p class="mt-2 text-2xl font-extrabold leading-none text-cyan-300 sm:text-3xl">XP <%= Number(stats.xp || 0).toLocaleString() %></p></div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-5 shadow-card sm:p-6"><h4 class="text-xs uppercase tracking-[0.2em] text-slate-400">Gyaan Coins</h4><p class="mt-2 text-2xl font-extrabold leading-none text-emerald-300 sm:text-3xl">💰 <%= Number(stats.coins || 0).toLocaleString() %></p></div>
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-5 shadow-card sm:p-6"><h4 class="text-xs uppercase tracking-[0.2em] text-slate-400">Badges Earned</h4><p class="mt-2 text-2xl font-extrabold leading-none text-amber-300 sm:text-3xl">🏆 <%= Number(stats.badges || 0).toLocaleString() %></p></div>
     </section>
 
-    <section class="course-progress">
-        <h2>Course Progress</h2>
-        <div class="progress-selector">
-            <select id="course-select" aria-label="Select a course to see progress">
+    <section class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-xl font-bold leading-tight text-white sm:text-2xl">Course Progress</h2>
+        <div class="mt-5 space-y-4">
+            <select id="course-select" aria-label="Select a course to see progress" class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
                 <option value="maths">Mathematics</option>
                 <option value="science">Science</option>
                 <option value="technology">Technology</option>
                 <option value="engineering">Engineering</option>
             </select>
-            <div class="progress-display">
-                <div class="progress-bar-container">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            <div class="flex items-center gap-3">
+                <div class="h-4 w-full overflow-hidden rounded-full bg-slate-800">
+                    <div id="progress-bar-fill" class="h-full w-0 rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-500"></div>
                 </div>
-                <span id="progress-percentage" class="progress-percentage"></span>
+                <span id="progress-percentage" class="min-w-28 text-right text-xs font-semibold leading-tight text-slate-200 sm:text-sm"></span>
             </div>
         </div>
     </section>
-
 </div>
 
 <script>
@@ -45,7 +43,7 @@
     // Function to update the progress bar and percentage text
     function updateProgress(course) {
         const percentage = progressData[course] || 0;
-        
+
         // Update the visual elements
         progressPercentage.textContent = percentage + '% Complete';
         progressBarFill.style.width = percentage + '%';

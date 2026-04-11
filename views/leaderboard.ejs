@@ -1,34 +1,33 @@
 <%- include('partials/header') %>
 
-<div class="leaderboard-container container">
-    <section class="page-title">
-        <h2>Leaderboard</h2>
-        <p>See who's at the top of the learning adventure!</p>
+<div class="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="mb-7 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl">Leaderboard</h2>
+        <p class="mt-2 text-slate-300">See who is at the top of the learning adventure.</p>
     </section>
 
-    <div class="leaderboard-table-wrapper">
-        <table class="leaderboard-table">
-            <thead>
+    <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/85 shadow-card">
+        <table class="min-w-[520px] w-full border-collapse text-left">
+            <thead class="bg-slate-800/80 text-xs uppercase tracking-[0.18em] text-slate-300">
                 <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>City</th>
-                    <th>XP</th>
+                    <th class="px-3 py-2 sm:px-4 sm:py-3">Rank</th>
+                    <th class="px-3 py-2 sm:px-4 sm:py-3">Player</th>
+                    <th class="px-3 py-2 sm:px-4 sm:py-3">City</th>
+                    <th class="px-3 py-2 sm:px-4 sm:py-3">XP</th>
                 </tr>
             </thead>
             <tbody>
                 <% topUsers.forEach((player, index) => { %>
-                    <tr class="<%= (player.id === user.id) ? 'current-user-rank' : '' %>">
-                        <td><%= index + 1 %></td>
-                        <td><%= player.full_name %></td>
-                        <td><%= player.city || 'N/A' %></td>
-                        <td><%= player.xp %></td>
+                    <tr class="border-t border-slate-800 <%= (player.id === user.id) ? 'bg-emerald-500/10' : 'bg-transparent' %>">
+                        <td class="px-3 py-2 font-bold text-slate-100 sm:px-4 sm:py-3"><%= index + 1 %></td>
+                        <td class="px-3 py-2 text-slate-100 sm:px-4 sm:py-3"><%= player.full_name %></td>
+                        <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= player.city || 'N/A' %></td>
+                        <td class="px-3 py-2 font-bold text-cyan-300 sm:px-4 sm:py-3"><%= player.xp %></td>
                     </tr>
                 <% }); %>
             </tbody>
         </table>
     </div>
-
 </div>
 
 <%- include('partials/footer') %>

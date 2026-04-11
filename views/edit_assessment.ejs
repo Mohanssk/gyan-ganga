@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+
+<div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <section class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+        <h2 class="text-2xl font-extrabold text-white sm:text-3xl">Edit <%= assessmentTypeLabel %></h2>
+        <p class="mt-2 text-slate-300">Update details for your assessment.</p>
+
+        <form action="/teacher/assessments/<%= assessmentType %>/<%= assessment.id %>/edit" method="POST" class="mt-6 space-y-5">
+            <div class="form-group">
+                <label for="classroom_id" class="mb-2 block text-sm font-semibold text-slate-200">Classroom *</label>
+                <select id="classroom_id" name="classroom_id" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                    <% classrooms.forEach((classroom) => { %>
+                        <option value="<%= classroom.id %>" <%= String(classroom.id) === String(assessment.classroom_id) ? 'selected' : '' %>><%= classroom.class_name %> (<%= classroom.subject %> - Grade <%= classroom.grade_level %>)</option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div class="form-group">
+                    <label for="subject" class="mb-2 block text-sm font-semibold text-slate-200">Subject *</label>
+                    <input type="text" id="subject" name="subject" value="<%= assessment.subject %>" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                </div>
+                <div class="form-group">
+                    <label for="max_score" class="mb-2 block text-sm font-semibold text-slate-200">Maximum Score *</label>
+                    <input type="number" id="max_score" name="max_score" min="1" value="<%= assessment.max_score %>" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title" class="mb-2 block text-sm font-semibold text-slate-200">Title *</label>
+                <input type="text" id="title" name="title" value="<%= assessment.title %>" required class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="mb-2 block text-sm font-semibold text-slate-200">Description</label>
+                <textarea id="description" name="description" rows="4" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none"><%= assessment.description || '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="due_date" class="mb-2 block text-sm font-semibold text-slate-200">Due Date</label>
+                <input type="date" id="due_date" name="due_date" value="<%= assessment.due_date ? new Date(assessment.due_date).toISOString().split('T')[0] : '' %>" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-cyan-400 focus:outline-none">
+            </div>
+
+            <div class="rounded-xl border border-slate-700 bg-amber-500/10 p-3 text-sm text-amber-100">
+                Questions cannot be edited here. If needed, create a new assessment with updated questions.
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button type="submit" class="rounded-xl bg-cyan-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-400">Save Changes</button>
+                <a href="/teacher/assessment-results/<%= assessmentType %>/<%= assessment.id %>" class="rounded-xl border border-slate-600 px-5 py-3 text-sm font-bold text-slate-200 transition hover:bg-slate-800">Cancel</a>
+            </div>
+        </form>
+    </section>
+</div>
+
+<%- include('partials/footer') %>

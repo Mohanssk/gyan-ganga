@@ -1,45 +1,62 @@
 <%- include('partials/header') %>
 
-<div class="dashboard-container container">
+<div class="w-full bg-slate-950 text-slate-100">
+    <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <section class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-4 shadow-card animate-fade-in-up sm:p-6 lg:p-8">
+            <div class="pointer-events-none absolute -right-14 -top-16 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl"></div>
+            <div class="pointer-events-none absolute -bottom-16 left-8 h-52 w-52 rounded-full bg-indigo-500/20 blur-3xl"></div>
 
-    <section class="page-title">
-        <h2>Teacher Dashboard</h2>
-        <p>Welcome, <%= user.full_name %>. Manage your classes, content, and students here.</p>
-    </section>
+            <div class="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.22em] text-cyan-300/90">Gyan Ganga Control Center</p>
+                    <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-white md:text-4xl">Teacher Dashboard</h2>
+                    <p class="mt-3 max-w-2xl text-slate-300">Welcome, <%= user.full_name %>. Manage your classes, content, and students with faster, cleaner workflows.</p>
+                </div>
 
-    <section class="teacher-actions">
-        <div class="action-grid">
-            <a href="/teacher/upload-video" class="action-card">
-                <div class="action-icon">🎥</div>
-                <h4>Upload Video</h4>
-                <p>Add a new video lesson to a course.</p>
-            </a>
-            
-            <a href="/teacher/create-assessment" class="action-card">
-                <div class="action-icon">📝</div>
-                <h4>Create Assignment</h4>
-                <p>Upload a new assignment for your class.</p>
-            </a>
-            
-            <a href="/teacher/create-assessment" class="action-card">
-                <div class="action-icon">✅</div>
-                <h4>Create Quiz</h4>
-                <p>Build a new quiz for your students.</p>
-            </a>
-            
-            <a href="/teacher/my-students" class="action-card">
-                <div class="action-icon">👥</div>
-                <h4>My Students</h4>
-                <p>View student profiles and progress.</p>
-            </a>
-            <a href="/teacher/my-classes" class="action-card">
-                <div class="action-icon">🏫</div>
-                <h4>My Classrooms</h4>
-                <p>Manage your classrooms and student enrollments.</p>
-            </a>
-        </div>
-    </section>
+                <span class="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-cyan-200 shadow-glow animate-soft-pulse">
+                    Live Workspace
+                </span>
+            </div>
+        </section>
 
+        <section class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <a href="/teacher/upload-video" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:80ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15 text-2xl text-cyan-300">🎥</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">Upload Video</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Add a new video lesson to a course.</p>
+            </a>
+
+            <a href="/teacher/create-assessment" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:140ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/20 text-2xl text-indigo-300">📝</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">Create Assignment</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Upload a new assignment for your class.</p>
+            </a>
+
+            <a href="/teacher/create-assessment" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:200ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/20 text-2xl text-emerald-300">✅</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">Create Quiz</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Build a new quiz for your students.</p>
+            </a>
+
+            <a href="/teacher/assessment-results" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:260ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15 text-2xl text-cyan-300">📊</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">Assessment Results</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Review student submissions and scores.</p>
+            </a>
+
+            <a href="/teacher/my-students" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:320ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-fuchsia-500/15 text-2xl text-fuchsia-300">👥</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">My Students</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">View student profiles and progress.</p>
+            </a>
+
+            <a href="/teacher/my-classes" class="group rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-cyan-400/60 hover:shadow-glow animate-fade-in-up [animation-delay:380ms] sm:p-6">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/15 text-2xl text-amber-300">🏫</div>
+                <h4 class="text-lg font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">My Classrooms</h4>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">Manage your classrooms and student enrollments.</p>
+            </a>
+        </section>
+    </div>
 </div>
 
 <%- include('partials/footer') %>

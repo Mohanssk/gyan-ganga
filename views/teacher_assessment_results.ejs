@@ -1,0 +1,151 @@
+<%- include('partials/header') %>
+
+<%
+    const activeAssessment =
+        (typeof assessment !== 'undefined' && assessment) ||
+        (typeof selectedAssessment !== 'undefined' && selectedAssessment) ||
+        null;
+    const activeType =
+        (typeof type !== 'undefined' && type) ||
+        (activeAssessment && activeAssessment.assessment_type) ||
+        null;
+    const activeAssessments = Array.isArray(assessments) ? assessments : [];
+    const submissionRows = Array.isArray(submissions) ? submissions : [];
+    const assessmentMaxScore =
+        (activeAssessment && activeAssessment.max_score) ||
+        (submissionRows.length > 0 ? submissionRows[0].total_questions : null);
+%>
+
+<div class="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <%- include('partials/flash-messages') %>
+
+    <% if (activeAssessment) { %>
+        <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+            <h2 class="text-2xl font-extrabold text-white sm:text-3xl"><%= activeAssessment.title %></h2>
+            <p class="mt-2 text-slate-300"><%= activeAssessment.description || 'No description provided.' %></p>
+
+            <div class="mt-5 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Type:</strong> <%= activeAssessment.assessment_type_label || (activeType || 'N/A') %></div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Subject:</strong> <%= activeAssessment.subject || 'N/A' %></div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Classroom:</strong> <%= activeAssessment.class_name || 'N/A' %></div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-slate-300"><strong>Max Score:</strong> <%= assessmentMaxScore || 'N/A' %></div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-3">
+                <% if (activeType) { %>
+                    <a href="/teacher/assessments/<%= activeType %>/<%= activeAssessment.id %>/edit" class="rounded-xl border border-cyan-500/60 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/15">Edit Assessment</a>
+                    <form action="/teacher/assessments/<%= activeType %>/<%= activeAssessment.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this assessment? This cannot be undone.');">
+                        <button type="submit" class="rounded-xl border border-rose-500/60 px-4 py-2 text-sm font-semibold text-rose-300 transition hover:bg-rose-500/15">Delete Assessment</button>
+                    </form>
+                <% } %>
+            </div>
+        </section>
+
+        <% if (submissionRows.length > 0) { %>
+            <section class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/85 shadow-card">
+                <table class="min-w-[980px] w-full border-collapse text-left">
+                    <thead class="bg-slate-800/80 text-xs uppercase tracking-[0.18em] text-slate-300">
+                        <tr>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Student</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Username</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Submitted At</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Score</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Percentage</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Status</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% submissionRows.forEach((submission) => {
+                            const calculatedPercentage = submission.total_questions > 0
+                                ? (submission.score / submission.total_questions) * 100
+                                : 0;
+                            const percentage = Number(submission.percentage ?? calculatedPercentage).toFixed(1);
+                        %>
+                            <tr class="border-t border-slate-800">
+                                <td class="px-3 py-2 font-semibold text-slate-100 sm:px-4 sm:py-3"><%= submission.full_name %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= submission.username %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= new Date(submission.submitted_at).toLocaleString() %></td>
+                                <td class="px-3 py-2 font-semibold text-cyan-300 sm:px-4 sm:py-3"><%= submission.score %>/<%= submission.total_questions || assessmentMaxScore || '-' %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= percentage %>%</td>
+                                <td class="px-3 py-2 sm:px-4 sm:py-3">
+                                    <% if (percentage >= 80) { %>
+                                        <span class="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">Excellent</span>
+                                    <% } else if (percentage >= 60) { %>
+                                        <span class="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">Good</span>
+                                    <% } else { %>
+                                        <span class="rounded-full border border-rose-400/40 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-200">Needs Improvement</span>
+                                    <% } %>
+                                </td>
+                                <td class="px-3 py-2 sm:px-4 sm:py-3">
+                                    <% if (activeType) { %>
+                                        <a href="/teacher/assessment-results/<%= activeType %>/<%= activeAssessment.id %>/submissions/<%= submission.id %>" class="rounded-lg border border-cyan-500/60 px-3 py-2 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/15">View Answers</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-5">
+                    <h4 class="text-xs uppercase tracking-[0.18em] text-slate-400">Total Submissions</h4>
+                    <p class="mt-2 text-3xl font-extrabold text-cyan-300"><%= submissionRows.length %></p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-5">
+                    <h4 class="text-xs uppercase tracking-[0.18em] text-slate-400">Average Percentage</h4>
+                    <p class="mt-2 text-3xl font-extrabold text-emerald-300"><%= (submissionRows.reduce((sum, s) => sum + Number(s.percentage || 0), 0) / submissionRows.length).toFixed(1) %>%</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-5">
+                    <h4 class="text-xs uppercase tracking-[0.18em] text-slate-400">Completion Rate</h4>
+                    <p class="mt-2 text-3xl font-extrabold text-indigo-300"><%= ((submissionRows.length / (activeAssessment.total_students || submissionRows.length || 1)) * 100).toFixed(1) %>%</p>
+                </div>
+            </section>
+        <% } else { %>
+            <div class="rounded-xl border border-slate-800 bg-slate-900/85 p-4 text-slate-300 sm:p-6">No submissions yet for this assessment.</div>
+        <% } %>
+    <% } else { %>
+        <section class="mb-8 rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-card sm:p-6">
+            <h2 class="text-2xl font-extrabold text-white sm:text-3xl">Assessment Results</h2>
+            <p class="mt-2 text-slate-300">Select an assessment to view student submissions.</p>
+        </section>
+
+        <% if (activeAssessments.length > 0) { %>
+            <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/85 shadow-card">
+                <table class="min-w-[920px] w-full border-collapse text-left">
+                    <thead class="bg-slate-800/80 text-xs uppercase tracking-[0.18em] text-slate-300">
+                        <tr>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Title</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Type</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Classroom</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Created</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Submissions</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Average Score</th>
+                            <th class="px-3 py-2 sm:px-4 sm:py-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% activeAssessments.forEach((assessment) => { %>
+                            <tr class="border-t border-slate-800">
+                                <td class="px-3 py-2 font-semibold text-slate-100 sm:px-4 sm:py-3"><%= assessment.title %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.assessment_type_label || assessment.assessment_type %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.class_name %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.created_at ? new Date(assessment.created_at).toLocaleDateString() : 'N/A' %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= assessment.submission_count || 0 %></td>
+                                <td class="px-3 py-2 text-slate-300 sm:px-4 sm:py-3"><%= Number(assessment.average_score_percentage || 0).toFixed(1) %>%</td>
+                                <td class="px-3 py-2 sm:px-4 sm:py-3">
+                                    <a href="/teacher/assessment-results/<%= assessment.assessment_type %>/<%= assessment.id %>" class="rounded-lg bg-cyan-500 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-cyan-400">View Results</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="rounded-xl border border-slate-800 bg-slate-900/85 p-4 text-slate-300 sm:p-6">No assessments created yet. Create your first one to start collecting results.</div>
+        <% } %>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
