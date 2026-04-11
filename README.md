@@ -82,15 +82,6 @@ npm install
 cp .env.example .env
 ```
 
-3. Update `.env` values
-
-```env
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
-SESSION_SECRET=change-me-to-a-long-random-secret
-NODE_ENV=development
-PORT=3000
-```
-
 4. Run migrations
 
 ```bash
