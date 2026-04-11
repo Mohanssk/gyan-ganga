@@ -23,6 +23,12 @@ Teachers can create classrooms, upload content, assign quizzes/tests/assignments
 - View assessment results and submission details.
 - Browse enrolled students.
 
+### Offline Website Capability (PWA)
+- Works offline for previously visited pages.
+- Caches core static assets (styles, images, scripts, fonts) after first load.
+- Shows a custom offline fallback page when internet is unavailable.
+- Uses a web app manifest for installable app-like behavior on supported devices.
+
 ## Tech Stack
 - Node.js (ES modules)
 - Express.js
@@ -40,6 +46,9 @@ Teachers can create classrooms, upload content, assign quizzes/tests/assignments
 │   └── 001_schema_core.sql
 ├── public/
 │   ├── images/
+│   ├── manifest.json
+│   ├── offline.html
+│   ├── sw.js
 │   ├── videos/
 │   │   ├── sample_video_eng.mp4
 │   │   └── uploads/
@@ -245,6 +254,27 @@ This guide explains exactly how students and teachers should use the platform da
 - Teachers should create classrooms first, then upload content and assessments.
 - Students should join a class before expecting content to appear.
 - If a page looks empty, verify class enrollment and available data.
+
+## Offline Capability Guide
+
+This project includes a service worker based offline mode.
+
+### What works offline
+- Previously visited pages can open from cache.
+- Static assets like CSS, images, and cached script/font files can load offline.
+- If a requested page is unavailable in cache, the app shows an offline fallback page.
+
+### What does not work offline
+- Login, signup, form submissions, and assessment submissions.
+- Any feature that requires live database reads/writes.
+
+### How to showcase offline mode (demo steps)
+1. Start the app and open the website while online.
+2. Visit key pages you want to demo (dashboard, courses, mission, assessments list).
+3. Open browser DevTools and switch network to Offline.
+4. Refresh one of the visited pages to show cached content still loads.
+5. Open a new unvisited route to show the custom offline fallback page.
+6. Switch network back to Online and refresh.
 
 ## Troubleshooting
 

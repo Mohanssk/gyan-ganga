@@ -4,5 +4,14 @@
             <p>&copy;<%= new Date().getFullYear() %> Team Gyanodhya. Empowering the next generation of innovators.</p>
         </div>
     </footer>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch((error) => {
+                    console.error('Service worker registration failed:', error);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
