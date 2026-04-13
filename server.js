@@ -638,6 +638,71 @@ app.get('/courses/:category', async (req, res) => {
   }
 });
 
+async function fetchSearchResults(searchQuery, limit = 20) {
+  const safeLimit = Number.isInteger(limit) ? Math.max(1, Math.min(limit, 20)) : 20;
+  const likeQuery = `%${searchQuery}%`;
+
+  const topicsResult = await db.query(
+    `SELECT
+      id,
+      topic_name,
+      description,
+      category,
+      grade_level
+    FROM topics
+    WHERE topic_name ILIKE $1 OR description ILIKE $1
+    ORDER BY topic_name ASC
+    LIMIT $2`,
+    [likeQuery, safeLimit]
+  );
+
+  const missionsResult = await db.query(
+    `SELECT
+      m.id,
+      m.mission_title,
+      m.mission_description,
+      m.mission_order,
+      t.topic_name,
+      t.category,
+      t.grade_level
+    FROM missions m
+    JOIN topics t ON t.id = m.topic_id
+    WHERE m.mission_title ILIKE $1
+       OR m.mission_description ILIKE $1
+       OR t.topic_name ILIKE $1
+    ORDER BY t.topic_name ASC, m.mission_order ASC
+    LIMIT $2`,
+    [likeQuery, safeLimit]
+  );
+
+  const videosResult = await db.query(
+    `SELECT
+      v.id,
+      v.mission_id,
+      v.video_title,
+      v.video_description,
+      v.language,
+      v.quality,
+      m.mission_title,
+      t.topic_name
+    FROM videos v
+    JOIN missions m ON m.id = v.mission_id
+    JOIN topics t ON t.id = m.topic_id
+    WHERE v.video_title ILIKE $1
+       OR v.video_description ILIKE $1
+       OR m.mission_title ILIKE $1
+    ORDER BY v.video_title ASC
+    LIMIT $2`,
+    [likeQuery, safeLimit]
+  );
+
+  return {
+    topics: topicsResult.rows,
+    missions: missionsResult.rows,
+    videos: videosResult.rows
+  };
+}
+
 app.get('/search', async (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -656,74 +721,51 @@ app.get('/search', async (req, res) => {
     });
   }
 
-  const likeQuery = `%${searchQuery}%`;
-
   try {
-    const topicsResult = await db.query(
-      `SELECT
-        id,
-        topic_name,
-        description,
-        category,
-        grade_level
-      FROM topics
-      WHERE topic_name ILIKE $1 OR description ILIKE $1
-      ORDER BY topic_name ASC
-      LIMIT 20`,
-      [likeQuery]
-    );
-
-    const missionsResult = await db.query(
-      `SELECT
-        m.id,
-        m.mission_title,
-        m.mission_description,
-        m.mission_order,
-        t.topic_name,
-        t.category,
-        t.grade_level
-      FROM missions m
-      JOIN topics t ON t.id = m.topic_id
-      WHERE m.mission_title ILIKE $1
-         OR m.mission_description ILIKE $1
-         OR t.topic_name ILIKE $1
-      ORDER BY t.topic_name ASC, m.mission_order ASC
-      LIMIT 20`,
-      [likeQuery]
-    );
-
-    const videosResult = await db.query(
-      `SELECT
-        v.id,
-        v.mission_id,
-        v.video_title,
-        v.video_description,
-        v.language,
-        v.quality,
-        m.mission_title,
-        t.topic_name
-      FROM videos v
-      JOIN missions m ON m.id = v.mission_id
-      JOIN topics t ON t.id = m.topic_id
-      WHERE v.video_title ILIKE $1
-         OR v.video_description ILIKE $1
-         OR m.mission_title ILIKE $1
-      ORDER BY v.video_title ASC
-      LIMIT 20`,
-      [likeQuery]
-    );
+    const { topics, missions, videos } = await fetchSearchResults(searchQuery, 20);
 
     res.render('search_results', {
       user: req.session.user,
       searchQuery,
-      topics: topicsResult.rows,
-      missions: missionsResult.rows,
-      videos: videosResult.rows
+      topics,
+      missions,
+      videos
     });
   } catch (err) {
     console.error('Error searching content:', err);
     req.flash('error', 'Unable to run search right now.');
     res.redirect('/dashboard');
+  }
+});
+
+app.get('/search/live', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const rawQuery = req.query.query || req.query.q || '';
+  const searchQuery = String(rawQuery).trim();
+
+  if (searchQuery.length < 2) {
+    return res.json({
+      searchQuery,
+      topics: [],
+      missions: [],
+      videos: []
+    });
+  }
+
+  try {
+    const { topics, missions, videos } = await fetchSearchResults(searchQuery, 6);
+    res.json({
+      searchQuery,
+      topics,
+      missions,
+      videos
+    });
+  } catch (err) {
+    console.error('Error in live search:', err);
+    res.status(500).json({ error: 'Unable to fetch live search results.' });
   }
 });
 

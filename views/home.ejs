@@ -3,11 +3,14 @@
 <div class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
     <%- include('partials/flash-messages') %>
 
-    <section class="mb-8 animate-fade-in-up">
-        <form action="/search" method="GET" class="rounded-2xl border border-slate-800 bg-slate-900/80 p-2 shadow-card">
-            <div class="flex flex-col gap-2 sm:flex-row">
-                <input type="text" name="query" placeholder="Search for a topic, mission, or concept..." class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
+    <section class="relative z-50 mb-8 animate-fade-in-up">
+        <form action="/search" method="GET" class="rounded-2xl border border-slate-800 bg-slate-900/80 p-2 shadow-card" autocomplete="off">
+            <div class="relative">
+                <div class="flex flex-col gap-2 sm:flex-row">
+                <input id="live-search-input" type="text" name="query" placeholder="Search for a topic, mission, or concept..." class="h-11 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30">
                 <button type="submit" class="h-11 rounded-xl bg-cyan-500 px-6 text-sm font-semibold text-slate-950 transition duration-300 hover:bg-cyan-400">Search</button>
+                </div>
+                <div id="live-search-results" class="hidden absolute left-0 right-0 z-[120] mt-2 max-h-[28rem] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-700 bg-slate-950 shadow-2xl"></div>
             </div>
         </form>
     </section>
@@ -90,5 +93,153 @@
         </div>
     </section>
 </div>
+
+<script>
+    (() => {
+        const searchInput = document.getElementById('live-search-input');
+        const resultsContainer = document.getElementById('live-search-results');
+
+        if (!searchInput || !resultsContainer) {
+            return;
+        }
+
+        let debounceTimer = null;
+        let activeController = null;
+
+        const escapeHtml = (value = '') => String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const hideResults = () => {
+            resultsContainer.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+        };
+
+        const sectionMarkup = (label, items, renderer) => {
+            if (!items.length) {
+                return '';
+            }
+
+            const cards = items.map(renderer).join('');
+            return `
+                <section class="border-b border-slate-800 px-3 py-3 last:border-b-0 sm:px-4">
+                    <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-cyan-300">${label}</h4>
+                    <div class="space-y-2">${cards}</div>
+                </section>
+            `;
+        };
+
+        const renderResults = (payload, query) => {
+            const topics = Array.isArray(payload.topics) ? payload.topics : [];
+            const missions = Array.isArray(payload.missions) ? payload.missions : [];
+            const videos = Array.isArray(payload.videos) ? payload.videos : [];
+            const total = topics.length + missions.length + videos.length;
+
+            if (total === 0) {
+                resultsContainer.innerHTML = `<div class="px-4 py-4 text-sm text-slate-300">No quick results for <span class="font-semibold text-cyan-300">"${escapeHtml(query)}"</span>.</div>`;
+                resultsContainer.classList.remove('hidden');
+                return;
+            }
+
+            const topicSection = sectionMarkup('Topics', topics, (topic) => `
+                <a href="/courses/${encodeURIComponent(topic.category || '')}" class="block rounded-lg border border-slate-800 bg-slate-900/85 px-3 py-2 transition hover:border-cyan-500/60 hover:bg-slate-900">
+                    <div class="text-sm font-semibold text-white">${escapeHtml(topic.topic_name || 'Untitled Topic')}</div>
+                    <div class="mt-1 text-xs text-slate-400">${escapeHtml(topic.category || 'Unknown')} • Grade ${escapeHtml(topic.grade_level || 'N/A')}</div>
+                </a>
+            `);
+
+            const missionSection = sectionMarkup('Missions', missions, (mission) => `
+                <a href="/mission/${encodeURIComponent(mission.id)}" class="block rounded-lg border border-slate-800 bg-slate-900/85 px-3 py-2 transition hover:border-cyan-500/60 hover:bg-slate-900">
+                    <div class="text-sm font-semibold text-white">${escapeHtml(mission.mission_title || 'Untitled Mission')}</div>
+                    <div class="mt-1 text-xs text-slate-400">${escapeHtml(mission.topic_name || 'Unknown Topic')} • Step ${escapeHtml(mission.mission_order || 'N/A')}</div>
+                </a>
+            `);
+
+            const videoSection = sectionMarkup('Videos', videos, (video) => `
+                <a href="/mission/${encodeURIComponent(video.mission_id)}" class="block rounded-lg border border-slate-800 bg-slate-900/85 px-3 py-2 transition hover:border-cyan-500/60 hover:bg-slate-900">
+                    <div class="text-sm font-semibold text-white">${escapeHtml(video.video_title || 'Untitled Video')}</div>
+                    <div class="mt-1 text-xs text-slate-400">${escapeHtml(video.mission_title || 'Unknown Mission')} • ${escapeHtml(video.language || 'N/A')}</div>
+                </a>
+            `);
+
+            const fullSearchLink = `
+                <a href="/search?query=${encodeURIComponent(query)}" class="block px-4 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-slate-900 hover:text-cyan-200">
+                    See full results for "${escapeHtml(query)}"
+                </a>
+            `;
+
+            resultsContainer.innerHTML = `${topicSection}${missionSection}${videoSection}${fullSearchLink}`;
+            resultsContainer.classList.remove('hidden');
+        };
+
+        const fetchLiveResults = async (query) => {
+            if (activeController) {
+                activeController.abort();
+            }
+
+            activeController = new AbortController();
+
+            const response = await fetch(`/search/live?query=${encodeURIComponent(query)}`, {
+                headers: {
+                    Accept: 'application/json'
+                },
+                signal: activeController.signal
+            });
+
+            if (!response.ok) {
+                throw new Error('Live search failed.');
+            }
+
+            return response.json();
+        };
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim();
+
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
+
+            if (query.length < 2) {
+                hideResults();
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const payload = await fetchLiveResults(query);
+
+                    if (searchInput.value.trim() !== query) {
+                        return;
+                    }
+
+                    renderResults(payload, query);
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+
+                    resultsContainer.innerHTML = '<div class="px-4 py-4 text-sm text-rose-300">Unable to load live search right now.</div>';
+                    resultsContainer.classList.remove('hidden');
+                }
+            }, 280);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (event.target !== searchInput && !resultsContainer.contains(event.target)) {
+                hideResults();
+            }
+        });
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                hideResults();
+            }
+        });
+    })();
+</script>
 
 <%- include('partials/footer') %>
